@@ -137,7 +137,7 @@ export const TripMap = ({
     };
 
     fetchRoute();
-    return () => controller.abort(); // CLEANUP: Prekida API poziv pri unmountu
+    return () => controller.abort();
   }, [startPos.lat, startPos.lng, endPos.lat, endPos.lng, destinations.length]);
 
   useEffect(() => {

@@ -18,7 +18,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      console.warn("Session expired. Logging out...");
+      console.warn("Session expired! Logging out...");
 
       localStorage.removeItem("token");
 

@@ -55,7 +55,7 @@ export const Login = () => {
       await login(response.data.token);
       navigate("/dashboard", { replace: true });
     } catch (error: unknown) {
-      let errorMessage = "Invalid email or password.";
+      let errorMessage = "Invalid email or password!";
 
       if (axios.isAxiosError<ApiError>(error)) {
         errorMessage = error.response?.data?.message || errorMessage;

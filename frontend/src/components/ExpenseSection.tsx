@@ -90,7 +90,7 @@ export const ExpenseSection = ({
       loadExpenses();
       if (onUpdate) onUpdate();
     } catch (err) {
-      toast.error("Error saving expense.");
+      toast.error("Error saving expense!");
     } finally {
       setIsSubmitting(false);
     }
@@ -99,11 +99,11 @@ export const ExpenseSection = ({
   const handleDelete = async (id: string) => {
     try {
       await api.delete(`/expenses/${id}`);
-      toast.info("Expense deleted.");
+      toast.info("Expense deleted!");
       loadExpenses();
       onUpdate?.();
     } catch (err) {
-      toast.error("Delete failed.");
+      toast.error("Delete failed!");
     }
   };
 

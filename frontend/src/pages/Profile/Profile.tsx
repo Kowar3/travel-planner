@@ -62,7 +62,7 @@ export const Profile = () => {
         toast.success("Profile updated successfully!");
       }
     } catch (error: unknown) {
-      let errorMessage = "Error saving data. Please try again.";
+      let errorMessage = "Error saving data! Please try again!";
 
       if (axios.isAxiosError(error)) {
         errorMessage = error.response?.data?.message || errorMessage;

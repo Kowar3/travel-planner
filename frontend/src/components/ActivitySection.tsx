@@ -59,7 +59,7 @@ export const ActivitySection = ({
       const res = await api.get(`/activities/${destination._id}`);
       setActivities(res.data);
     } catch (err) {
-      toast.error("Failed to load activities.");
+      toast.error("Failed to load activities!");
     }
   };
 
@@ -69,7 +69,7 @@ export const ActivitySection = ({
       return;
     }
     if (!formData.date) {
-      toast.warn("Please select a date.");
+      toast.warn("Please select a date!");
       return;
     }
 
@@ -85,7 +85,7 @@ export const ActivitySection = ({
       loadActivities();
       if (onUpdate) onUpdate();
     } catch (err) {
-      toast.error("Could not save activity.");
+      toast.error("Could not save activity!");
     } finally {
       setIsSubmitting(false);
     }
@@ -94,11 +94,11 @@ export const ActivitySection = ({
   const handleDelete = async (id: string) => {
     try {
       await api.delete(`/activities/${id}`);
-      toast.info("Activity removed.");
+      toast.info("Activity removed!");
       loadActivities();
       onUpdate?.();
     } catch (err) {
-      toast.error("Failed to delete activity.");
+      toast.error("Failed to delete activity!");
     }
   };
 

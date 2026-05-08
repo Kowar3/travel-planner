@@ -79,7 +79,7 @@ export const TripDetails = () => {
       setTrip(tRes.data);
       setDestinations(dRes.data);
     } catch (err) {
-      toast.error("Failed to load trip details.");
+      toast.error("Failed to load trip details!");
     }
   }, [id]);
 
@@ -96,7 +96,7 @@ export const TripDetails = () => {
     const eDate = new Date(formData.endDate);
 
     if (sDate > eDate) {
-      setDateError("Arrival date cannot be after departure.");
+      setDateError("Arrival date cannot be after departure!");
       return;
     }
 
@@ -144,7 +144,7 @@ export const TripDetails = () => {
 
     if (minDistanceToRoute > 200) {
       toast.warn(
-        `Location is too far from the planned route (${Math.round(minDistanceToRoute)}km). Max allowed: 200km.`,
+        `Location is too far from the planned route (${Math.round(minDistanceToRoute)}km)! Max allowed: 200km!`,
       );
       return;
     }
@@ -219,7 +219,7 @@ export const TripDetails = () => {
       refreshData();
       toast.success("Budget updated successfully!");
     } catch (err) {
-      toast.error("Error updating budget.");
+      toast.error("Error updating budget!");
     }
   };
 
@@ -232,7 +232,7 @@ export const TripDetails = () => {
     const eDate = new Date(finalEndDate);
 
     if (sDate > eDate) {
-      return toast.error("Arrival cannot be after departure.");
+      return toast.error("Arrival cannot be after departure!");
     }
 
     const overlap = destinations.find((d) => {
@@ -256,20 +256,20 @@ export const TripDetails = () => {
       setEditingId(null);
       await refreshData();
     } catch (err) {
-      toast.error("Failed to update dates.");
+      toast.error("Failed to update dates!");
     }
   };
   const confirmDelete = async () => {
     if (!deleteId) return;
     try {
       await api.delete(`/destinations/${deleteId}`);
-      toast.success("Stop removed from itinerary.");
+      toast.success("Stop removed from itinerary!");
       setDeleteId(null);
       setIsDeleteOpen(false);
       refreshData();
       refreshStats();
     } catch (err) {
-      toast.error("Failed to delete stop.");
+      toast.error("Failed to delete stop!");
     }
   };
 

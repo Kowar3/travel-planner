@@ -51,11 +51,11 @@ export const TripCard = ({ trip, onClick, onDeleted }: TripCardProps) => {
     setDeleting(true);
     try {
       await api.delete(`/trips/${trip._id}`);
-      toast.success("Trip deleted.");
+      toast.success("Trip deleted!");
       setIsDeleteOpen(false);
       onDeleted();
     } catch {
-      toast.error("Failed to delete trip.");
+      toast.error("Failed to delete trip!");
     } finally {
       setDeleting(false);
     }

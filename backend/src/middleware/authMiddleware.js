@@ -6,7 +6,7 @@ module.exports = function (req, res, next) {
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res
       .status(401)
-      .json({ message: "Access denied. The token is missing." });
+      .json({ message: "Access denied! The token is missing!" });
   }
 
   const token = authHeader.split(" ")[1];

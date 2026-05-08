@@ -75,14 +75,14 @@ export const Register = () => {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (!error.response) {
-          setServerError("Network error. Check your connection.");
+          setServerError("Network error! Check your connection!");
         } else {
           const message =
-            error.response.data?.message || "Registration failed.";
+            error.response.data?.message || "Registration failed!";
           setServerError(message);
         }
       } else {
-        setServerError("An unexpected error occurred.");
+        setServerError("An unexpected error occurred!");
       }
     } finally {
       setLoading(false);

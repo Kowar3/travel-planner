@@ -66,7 +66,7 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 
 if (!MONGO_URI) {
-  console.error("FATAL ERROR: MONGO_URI is not defined in .env file.");
+  console.error("FATAL ERROR: MONGO_URI is not defined in .env file!");
   process.exit(1);
 }
 
