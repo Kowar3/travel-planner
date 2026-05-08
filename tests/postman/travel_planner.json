@@ -1,0 +1,715 @@
+{
+  "info": {
+    "name": "Travel Planner API",
+    "_postman_id": "travel-planner-collection",
+    "description": "Kompletna kolekcija za testiranje Travel Planner REST API-ja.\n\nRedosled pokretanja:\n1. Auth - Register\n2. Auth - Login (automatski setuje TOKEN varijablu)\n3. Ostali zahtevi koriste {{TOKEN}} i {{TRIP_ID}}, {{DEST_ID}} itd.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "BASE_URL", "value": "http://localhost:5000/api" },
+    { "key": "TOKEN", "value": "" },
+    { "key": "REGISTERED_EMAIL", "value": "" },
+    { "key": "TRIP_ID", "value": "" },
+    { "key": "DEST_ID", "value": "" },
+    { "key": "ACTIVITY_ID", "value": "" },
+    { "key": "EXPENSE_ID", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const body = pm.response.json();",
+                  "",
+                  "if (pm.response.code === 201) {",
+                  "    if (body.token) {",
+                  "        pm.collectionVariables.set('TOKEN', body.token);",
+                  "    }",
+                  "    if (body.user && body.user.email) {",
+                  "        pm.collectionVariables.set('REGISTERED_EMAIL', body.user.email);",
+                  "    }",
+                  "}",
+                  "",
+                  "pm.test('Status 201 Created', () => {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test('Response contains Auth Data', () => {",
+                  "    pm.expect(body).to.have.property('token');",
+                  "    pm.expect(body).to.have.property('user');",
+                  "});",
+                  "",
+                  "pm.test('User details are correct', () => {",
+                  "    pm.expect(body.user).to.have.property('email');",
+                  "    pm.expect(body.user).to.have.property('firstName');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"testuser{{$randomInt}}@test.com\",\n  \"password\": \"Test123!\"\n}"
+            },
+            "url": "{{BASE_URL}}/auth/register"
+          }
+        },
+        {
+          "name": "Register - Validation Error (weak password)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 for weak password', () => pm.response.to.have.status(400));",
+                  "pm.test('Error message present', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\",\n  \"email\": \"weak@test.com\",\n  \"password\": \"123\"\n}"
+            },
+            "url": "{{BASE_URL}}/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Token saved', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('token');",
+                  "  pm.collectionVariables.set('TOKEN', body.token);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{REGISTERED_EMAIL}}\",\n  \"password\": \"Test123!\"\n}"
+            },
+            "url": "{{BASE_URL}}/auth/login"
+          }
+        },
+        {
+          "name": "Login - Wrong Password",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 400 for wrong password', () => pm.response.to.have.status(400));",
+                  "pm.test('Error message returned', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.message).to.include('Invalid');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{REGISTERED_EMAIL}}\",\n  \"password\": \"WrongPassword!\"\n}"
+            },
+            "url": "{{BASE_URL}}/auth/login"
+          }
+        },
+        {
+          "name": "Protected Route - No Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 401 without token', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": "{{BASE_URL}}/trips"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Profile has required fields', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('email');",
+                  "  pm.expect(body).to.have.property('firstName');",
+                  "  pm.expect(body).to.have.property('lastName');",
+                  "  pm.expect(body).to.not.have.property('password');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/users/profile"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Name updated', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.firstName).to.equal('Updated');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Updated\",\n  \"lastName\": \"User\"\n}"
+            },
+            "url": "{{BASE_URL}}/users/profile"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Trips",
+      "item": [
+        {
+          "name": "Create Trip",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Trip ID saved', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('_id');",
+                  "  pm.expect(body.title).to.equal('Test Trip');",
+                  "  pm.collectionVariables.set('TRIP_ID', body._id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Test Trip\",\n  \"description\": \"Test opis putovanja\",\n  \"startDate\": \"2026-08-01\",\n  \"endDate\": \"2026-08-10\",\n  \"totalBudget\": 1000,\n  \"startCity\": \"Kragujevac\",\n  \"startLat\": 43.9993,\n  \"startLng\": 20.9244,\n  \"endCity\": \"Bec\",\n  \"endLat\": 48.2082,\n  \"endLng\": 16.3738\n}"
+            },
+            "url": "{{BASE_URL}}/trips"
+          }
+        },
+        {
+          "name": "Get All Trips",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Response has trips array', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('trips');",
+                  "  pm.expect(body.trips).to.be.an('array');",
+                  "});",
+                  "pm.test('Pagination fields present', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('totalPages');",
+                  "  pm.expect(body).to.have.property('currentPage');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/trips?page=1&limit=6"
+          }
+        },
+        {
+          "name": "Get Trips - Filter Upcoming",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns array', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.trips).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/trips?status=upcoming"
+          }
+        },
+        {
+          "name": "Get Trip By ID",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Trip has correct title', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.title).to.equal('Test Trip');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/trips/{{TRIP_ID}}"
+          }
+        },
+        {
+          "name": "Update Trip Budget",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Budget updated', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.totalBudget).to.equal(1500);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"totalBudget\": 1500\n}"
+            },
+            "url": "{{BASE_URL}}/trips/{{TRIP_ID}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Destinations",
+      "item": [
+        {
+          "name": "Create Destination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Destination ID saved', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('_id');",
+                  "  pm.expect(body.city).to.equal('Bec');",
+                  "  pm.collectionVariables.set('DEST_ID', body._id);",
+                  "});",
+                  "pm.test('isFinal is set', () => {",
+                  "const body = pm.response.json();",
+                  "pm.expect(body).to.have.property('isFinal');",
+                  "pm.expect(body.isFinal).to.equal(false);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tripId\": \"{{TRIP_ID}}\",\n  \"city\": \"Bec\",\n  \"country\": \"Austria\",\n  \"startDate\": \"2026-08-03\",\n  \"endDate\": \"2026-08-07\",\n  \"latitude\": 48.2082,\n  \"longitude\": 16.3738\n}"
+            },
+            "url": "{{BASE_URL}}/destinations"
+          }
+        },
+        {
+          "name": "Get Destinations for Trip",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns array', () => {",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/destinations/{{TRIP_ID}}"
+          }
+        },
+        {
+          "name": "Forbidden - Other User Destination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 or 404', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/destinations/000000000000000000000000"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Activities",
+      "item": [
+        {
+          "name": "Create Activity",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Activity saved', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.title).to.equal('Obilazak centra');",
+                  "  pm.collectionVariables.set('ACTIVITY_ID', body._id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destinationId\": \"{{DEST_ID}}\",\n  \"title\": \"Obilazak centra\",\n  \"description\": \"Šetnja kroz centar Beča\",\n  \"date\": \"2026-08-04\",\n  \"location\": \"Stephansplatz\"\n}"
+            },
+            "url": "{{BASE_URL}}/activities"
+          }
+        },
+        {
+          "name": "Get Activities for Destination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns array', () => {",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/activities/{{DEST_ID}}"
+          }
+        },
+        {
+          "name": "Delete Activity",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.message).to.include('deleted');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/activities/{{ACTIVITY_ID}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Expenses",
+      "item": [
+        {
+          "name": "Create Expense",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 201', () => pm.response.to.have.status(201));",
+                  "pm.test('Expense saved', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.amount).to.equal(50);",
+                  "  pm.expect(body.category).to.equal('food');",
+                  "  pm.collectionVariables.set('EXPENSE_ID', body._id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{TOKEN}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"destinationId\": \"{{DEST_ID}}\",\n  \"title\": \"Vecera\",\n  \"category\": \"food\",\n  \"amount\": 50,\n  \"startDate\": \"2026-08-04\",\n  \"endDate\": \"2026-08-04\"\n}"
+            },
+            "url": "{{BASE_URL}}/expenses"
+          }
+        },
+        {
+          "name": "Get Expenses for Destination",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Returns array', () => {",
+                  "  pm.expect(pm.response.json()).to.be.an('array');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/expenses/{{DEST_ID}}"
+          }
+        },
+        {
+          "name": "Delete Expense",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/expenses/{{EXPENSE_ID}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Statistics",
+      "item": [
+        {
+          "name": "Global Stats",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has required stat fields', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('totalTrips');",
+                  "  pm.expect(body).to.have.property('totalSpent');",
+                  "  pm.expect(body).to.have.property('totalDays');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/statistics/global-stats"
+          }
+        },
+        {
+          "name": "Trip Overview",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Has budget and destinations', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('plannedBudget');",
+                  "  pm.expect(body).to.have.property('destinations');",
+                  "  pm.expect(body).to.have.property('totalSpent');",
+                  "  pm.expect(body).to.have.property('categoryBreakdown');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/statistics/trip/{{TRIP_ID}}/overview"
+          }
+        },
+        {
+          "name": "Statistics - Forbidden (other trip)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 403 or 404', () => {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([403, 404]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/statistics/trip/000000000000000000000000/overview"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cascade Delete",
+      "item": [
+        {
+          "name": "Delete Trip (cascade)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Success message', () => {",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body).to.have.property('message');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/trips/{{TRIP_ID}}"
+          }
+        },
+        {
+          "name": "Verify Trip Deleted",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test('Status 404 after deletion', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{TOKEN}}" }],
+            "url": "{{BASE_URL}}/trips/{{TRIP_ID}}"
+          }
+        }
+      ]
+    }
+  ]
+}
