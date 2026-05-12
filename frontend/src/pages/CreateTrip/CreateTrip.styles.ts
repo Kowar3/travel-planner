@@ -37,8 +37,8 @@ export const createTripStyles = {
     borderRadius: "3xl",
     overflow: "hidden",
     shadow: "2xl",
-    border: { base: "4px solid", lg: "10px solid" },
-    borderColor: { base: "white", _dark: "gray.800" },
+    border: "4px solid",
+    borderColor: "teal.500",
     position: "relative",
   },
   locationBox: (isActive: boolean, type: "start" | "end") => ({

@@ -20,6 +20,7 @@ import {
   YAxis,
   CartesianGrid,
   ResponsiveContainer,
+  Tooltip,
 } from "recharts";
 import { Wallet, Car, Calendar, ArrowRight, Loader2, Plus } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -87,7 +88,12 @@ export const Dashboard = () => {
           .map((t: any, i: number) => ({
             name:
               t.title.length > 10 ? t.title.substring(0, 8) + ".." : t.title,
+            fullTitle: t.title,
             budget: Number(t.totalBudget) || 0,
+            startCity: t.startCity,
+            endCity: t.endCity,
+            startDate: t.startDate,
+            endDate: t.endDate,
             fill: vibrantColors[i % vibrantColors.length],
           }))
           .reverse();
@@ -123,6 +129,21 @@ export const Dashboard = () => {
   }
 
   if (stats.totalTrips === -1) return null;
+
+  const CustomBar = (props: any) => {
+    const { x, y, width, height, payload } = props;
+    return (
+      <rect
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        fill={payload.fill}
+        rx={6}
+        ry={6}
+      />
+    );
+  };
 
   return (
     <Box {...styles.container}>
@@ -243,7 +264,109 @@ export const Dashboard = () => {
                     <CartesianGrid {...styles.chartGrid(false)} />
                     <XAxis {...styles.xaxis} dataKey="name" />
                     <YAxis axisLine={false} tickLine={false} fontSize={10} />
-                    <Bar dataKey="budget" radius={[6, 6, 0, 0]} barSize={35} />
+                    <Bar dataKey="budget" shape={<CustomBar />} barSize={35} />
+                    <Tooltip
+                      cursor={{ fill: "rgba(255,255,255,0.05)" }}
+                      content={({ active, payload }) => {
+                        if (!active || !payload?.length) return null;
+                        const t = payload[0].payload;
+                        return (
+                          <div
+                            style={{
+                              backgroundColor: "#1A202C",
+                              borderRadius: "12px",
+                              padding: "10px 14px",
+                              boxShadow: "0 10px 15px -3px rgba(0,0,0,0.4)",
+                              minWidth: "160px",
+                            }}
+                          >
+                            <p
+                              style={{
+                                color: "white",
+                                fontWeight: "800",
+                                fontSize: "13px",
+                                marginBottom: "8px",
+                              }}
+                            >
+                              {t.fullTitle}
+                            </p>
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                                gap: "16px",
+                                marginBottom: "4px",
+                              }}
+                            >
+                              <span
+                                style={{ color: "#718096", fontSize: "11px" }}
+                              >
+                                Budget
+                              </span>
+                              <span
+                                style={{
+                                  color: "#4FD1C5",
+                                  fontWeight: "700",
+                                  fontSize: "11px",
+                                }}
+                              >
+                                €{t.budget.toLocaleString()}
+                              </span>
+                            </div>
+                            {t.startCity && (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  gap: "16px",
+                                  marginBottom: "4px",
+                                }}
+                              >
+                                <span
+                                  style={{ color: "#718096", fontSize: "11px" }}
+                                >
+                                  Route
+                                </span>
+                                <span
+                                  style={{
+                                    color: "white",
+                                    fontWeight: "700",
+                                    fontSize: "11px",
+                                  }}
+                                >
+                                  {t.startCity} → {t.endCity}
+                                </span>
+                              </div>
+                            )}
+                            {t.startDate && (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  gap: "16px",
+                                }}
+                              >
+                                <span
+                                  style={{ color: "#718096", fontSize: "11px" }}
+                                >
+                                  Dates
+                                </span>
+                                <span
+                                  style={{
+                                    color: "white",
+                                    fontWeight: "700",
+                                    fontSize: "11px",
+                                  }}
+                                >
+                                  {formatDate(t.startDate)} —{" "}
+                                  {formatDate(t.endDate)}
+                                </span>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </Box>

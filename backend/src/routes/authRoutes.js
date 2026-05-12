@@ -14,8 +14,23 @@ router.post(
       .withMessage(
         "Password must contain letter, number and special character!",
       ),
-    body("firstName").notEmpty().withMessage("First name is mandatory field!"),
-    body("lastName").notEmpty().withMessage("Last name is mandatory field!"),
+    body("firstName")
+      .notEmpty()
+      .withMessage("First name is mandatory field!")
+      .matches(/^[A-ZŠĐČĆŽ][a-zšđčćž]*$/)
+      .withMessage("Use Aa format")
+      .not()
+      .matches(/[^A-ZŠĐČĆŽa-zšđčćž]/)
+      .withMessage("Only letters allowed"),
+
+    body("lastName")
+      .notEmpty()
+      .withMessage("Last name is mandatory field!")
+      .matches(/^[A-ZŠĐČĆŽ][a-zšđčćž]*$/)
+      .withMessage("Use Aa format")
+      .not()
+      .matches(/[^A-ZŠĐČĆŽa-zšđčćž]/)
+      .withMessage("Only letters allowed"),
   ],
   authController.register,
 );

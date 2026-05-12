@@ -5,7 +5,10 @@ export const validateName = (name: string): string => {
   if (name.length < 2) return "Too short (min 2)";
   if (name.length > 50) return "Too long (max 50)";
   const nameRegex = /^[A-ZŠĐČĆŽ][a-zšđčćž]*$/;
-  if (!nameRegex.test(name)) return "Use Aa format";
+  if (!nameRegex.test(name)) {
+    if (/[^A-ZŠĐČĆŽa-zšđčćž]/.test(name)) return "Only letters allowed";
+    return "Use Aa format";
+  }
   return "";
 };
 

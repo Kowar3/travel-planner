@@ -57,7 +57,7 @@ public class CreateTripTest extends BaseTest{
 
         page.klikniAddTrip();
 
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         assertTrue(page.jeIStranicaZaKreiranje());
         assertEquals(page.tekstGreske(), "Choose end point!");

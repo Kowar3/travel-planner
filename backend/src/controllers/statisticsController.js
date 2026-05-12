@@ -62,9 +62,14 @@ exports.getGlobalStats = async (req, res) => {
           totalPlanned: { $sum: "$totalBudget" },
           totalDays: {
             $sum: {
-              $divide: [
-                { $subtract: ["$endDate", "$startDate"] },
-                1000 * 60 * 60 * 24,
+              $add: [
+                {
+                  $divide: [
+                    { $subtract: ["$endDate", "$startDate"] },
+                    1000 * 60 * 60 * 24,
+                  ],
+                },
+                1,
               ],
             },
           },
@@ -84,7 +89,7 @@ exports.getGlobalStats = async (req, res) => {
     const lastFiveTrips = await Trip.find({ userId })
       .sort({ startDate: -1 })
       .limit(5)
-      .select("title totalBudget")
+      .select("title totalBudget startDate endDate startCity endCity")
       .lean();
 
     const tStats = tripStats[0] || {

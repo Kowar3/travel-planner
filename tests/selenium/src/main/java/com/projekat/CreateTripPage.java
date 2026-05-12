@@ -47,10 +47,9 @@ public class CreateTripPage extends BasePage {
 
     public void popuniDatum(By locator, String dan, String mesec, String godina) {
         WebElement el = driver.findElement(locator);
-        el.click();
-        el.sendKeys(dan);
-        el.sendKeys(mesec);
-        el.sendKeys(godina);
+        el.clear();
+        el.sendKeys(dan + mesec + godina);
+        el.sendKeys(Keys.TAB);
     }
 
     public void unesiDatumPolaska(String dan, String mesec, String godina) {

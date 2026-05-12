@@ -217,6 +217,7 @@ export const TripDetails = () => {
       });
       setIsEditingBudget(false);
       refreshData();
+      refreshStats();
       toast.success("Budget updated successfully!");
     } catch (err) {
       toast.error("Error updating budget!");
