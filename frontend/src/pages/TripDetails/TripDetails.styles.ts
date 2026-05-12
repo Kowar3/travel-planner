@@ -1,8 +1,6 @@
 export const tripDetailsStyles = {
   glass: {
     bg: { base: "white", _dark: "gray.900" },
-    borderBottom: "1px solid",
-    borderColor: { _dark: "whiteAlpha.100" },
   },
 
   deleteModal: {

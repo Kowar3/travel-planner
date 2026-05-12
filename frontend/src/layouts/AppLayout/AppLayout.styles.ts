@@ -17,7 +17,7 @@ export const appLayoutstyles = {
 
   mainWrapper: {
     minH: "100vh",
-    bg: { base: "gray.50", _dark: "black" },
+    bg: { base: "gray.100", _dark: "black" },
     transition: "background 0.3s",
   },
 

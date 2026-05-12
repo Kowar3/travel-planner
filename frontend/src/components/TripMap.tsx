@@ -199,14 +199,7 @@ export const TripMap = ({
   }
 
   return (
-    <Box
-      position="relative"
-      w="full"
-      h="100%"
-      borderRadius="3xl"
-      overflow="hidden"
-      minH="300px"
-    >
+    <Box position="relative" w="full" h="100%" overflow="hidden" minH="300px">
       <Box
         position="absolute"
         top={4}

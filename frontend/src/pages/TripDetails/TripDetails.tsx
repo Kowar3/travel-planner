@@ -35,7 +35,7 @@ import api from "@/api/axios";
 import { TripMap } from "@/components/TripMap";
 import { Statistics } from "@/components/Statistics";
 import { ExpenseSection } from "@/components/ExpenseSection";
-import { formatDate, getDistanceFromLine } from "@/utils/helpers";
+import { formatDate, getDistanceFromLine, toLatin } from "@/utils/helpers";
 import { tripDetailsStyles as styles } from "./TripDetails.styles";
 import { ActivitySection } from "@/components/ActivitySection";
 import type { AddressObject, Destination, Trip } from "@/types/types";
@@ -151,9 +151,12 @@ export const TripDetails = () => {
 
     const rawCity =
       addrObj.city || addrObj.town || addrObj.village || "Selected Location";
-    const cleanCity = String(rawCity)
-      .replace(/(Gradska opština|Grad|Opština)\s+/gi, "")
-      .trim();
+
+    const cleanCity = toLatin(
+      String(rawCity)
+        .replace(/(Gradska opština|Grad|Opština)\s+/gi, "")
+        .trim(),
+    );
 
     const defaultDate = trip?.startDate ? trip.startDate.split("T")[0] : "";
 
@@ -287,7 +290,7 @@ export const TripDetails = () => {
     );
 
   return (
-    <Box bg={{ base: "gray.50", _dark: "gray.950" }} minH="100vh" pb={20}>
+    <Box bg={{ base: "gray.100", _dark: "black" }} minH="100vh" pb={20}>
       <Box {...styles.glass} py={4}>
         <Container maxW="container.xl">
           <Flex justify="space-between" align="center">
@@ -361,7 +364,7 @@ export const TripDetails = () => {
         w="full"
         h="400px"
         bg="gray.200"
-        borderBottom="4px solid"
+        border="4px solid"
         borderColor="teal.500"
       >
         <TripMap
