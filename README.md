@@ -36,7 +36,7 @@ Ideja iza aplikacije je jednostavna: putovanje predstavlja skup destinacija sa s
 Korisnik se registruje ili prijavljuje
         │
         ▼
-Kreira putovanje — bira start i cilj na mapi, unosi datume i budžet
+Kreira putovanje — unosi start i cilj i bira mesto iz padajućeg menija, unosi datume i budžet
         │
         ▼
 Dodaje međustanice (opciono) — Unosi naziv međustanice, sistem validira udaljenost od rute, ako je validno ruta se prikazuje na mapi
@@ -260,11 +260,11 @@ travel-planner/
 │       │   ├── Login / Register
 │       │   ├── Dashboard                 # globalni pregled i statistika
 │       │   ├── Trips                     # lista sa pretragom, filterima, paginacijom
-│       │   ├── TripDetails              # mapa, stanice, statistika, izmene
-│       │   ├── CreateTrip               # kreiranje sa interaktivnom mapom
-│       │   ├── WorldMap                 # sve destinacije na jednoj karti
-│       │   ├── Profile                  # korisnički profil
-│       │   └── NotFound                 # 404 stranica
+│       │   ├── TripDetails               # mapa, stanice, statistika, izmene
+│       │   ├── CreateTrip                # kreiranje sa interaktivnom mapom
+│       │   ├── WorldMap                  # sve destinacije na jednoj karti
+│       │   ├── Profile                   # korisnički profil
+│       │   └── NotFound                  # 404 stranica
 │       │
 │       ├── routes/
 │       │   ├── AppRouter.tsx             # sve rute aplikacije
@@ -345,7 +345,7 @@ Korisnik ne može da menja tuđe podatke čak i ako zna ID resursa.
 | bcrypt        | Hashovanje lozinki, 10 salt rounds                                                                        |
 | Helmet        | Bezbednosni HTTP headeri                                                                                  |
 | CORS          | Ograničen na `localhost:5173` u razvoju                                                                   |
-| Rate limiting | 200 req/15min za API; 20 req/sat za auth rute                                                             |
+| Rate limiting | 300 req/15min za API; 30 req/sat za auth rute                                                             |
 | Validacija    | express-validator — email, lozinka min 8 znakova + slovo + broj + specijalni znak, ime i prezime obavezni |
 
 ---
