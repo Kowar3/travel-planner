@@ -2,7 +2,7 @@ import { Card, VStack, Heading, Text, Button, Box } from "@chakra-ui/react";
 import { SearchX, Plus } from "lucide-react";
 
 interface EmptyStateProps {
-  onAction: () => void;
+  onAction: VoidFunction;
   isSearch?: boolean;
 }
 

@@ -19,8 +19,8 @@ import type { Trip } from "@/types/types";
 
 interface TripCardProps {
   trip: Trip;
-  onClick: () => void;
-  onDeleted: () => void;
+  onClick: VoidFunction;
+  onDeleted: () => VoidFunction;
 }
 
 export const TripCard = ({ trip, onClick, onDeleted }: TripCardProps) => {

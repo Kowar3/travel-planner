@@ -23,7 +23,7 @@ export const ExpenseSection = ({
   onUpdate,
 }: {
   destination: Destination;
-  onUpdate?: () => void;
+  onUpdate?: VoidFunction;
 }) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -88,7 +88,7 @@ export const ExpenseSection = ({
         endDate: minDate,
       });
       loadExpenses();
-      if (onUpdate) onUpdate();
+      onUpdate?.();
     } catch (err) {
       toast.error("Error saving expense!");
     } finally {

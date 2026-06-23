@@ -35,6 +35,6 @@ public class LoginTest extends BaseTest {
         String tekstGreske = loginPage.submitLoginWithError();
 
         assertFalse(tekstGreske.isEmpty());
-        assertTrue(tekstGreske.contains("Invalid email or password"));
+        assertTrue(tekstGreske.contains("Invalid email!"));
     }
 }

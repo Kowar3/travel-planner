@@ -46,10 +46,8 @@ public class LoginPage extends BasePage {
 
         clickLogin();
 
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
-
         return wait.until(ExpectedConditions.visibilityOfElementLocated(
-                By.xpath("//*[text()='Invalid email or password']")
+                By.xpath("//*[text()='Invalid email!']")
         )).getText();
     }
 

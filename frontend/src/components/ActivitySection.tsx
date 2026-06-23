@@ -30,7 +30,7 @@ export const ActivitySection = ({
   onUpdate,
 }: {
   destination: Destination;
-  onUpdate?: () => void;
+  onUpdate?: VoidFunction;
 }) => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);

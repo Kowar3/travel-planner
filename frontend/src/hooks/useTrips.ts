@@ -23,7 +23,7 @@ interface UseTripsReturn {
   totalPages: number;
   params: TripParams;
   setParams: Dispatch<SetStateAction<TripParams>>;
-  reload: () => void;
+  reload: VoidFunction;
 }
 
 export const useTrips = (initialParams: TripParams): UseTripsReturn => {

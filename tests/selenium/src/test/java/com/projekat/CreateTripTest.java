@@ -28,8 +28,8 @@ public class CreateTripTest extends BaseTest{
         page.odaberiPolaziste("Kragujevac");
         page.odaberiOdrediste("Beograd");
 
-        page.unesiDatumPolaska("20", "05", "2026");
-        page.unesiDatumPovratka("30", "05", "2026");
+        page.unesiDatumPolaska("20", "07", "2026");
+        page.unesiDatumPovratka("30", "07", "2026");
 
         page.unesiBudzet("500");
 

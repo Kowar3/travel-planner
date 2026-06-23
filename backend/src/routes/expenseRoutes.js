@@ -5,6 +5,7 @@ const router = express.Router();
 const expenseController = require("../controllers/expenseController");
 
 const authMiddleware = require("../middleware/authMiddleware");
+
 const {
   isDestinationOwner,
   isExpenseOwner,

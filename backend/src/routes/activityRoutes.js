@@ -5,6 +5,7 @@ const router = express.Router();
 const activityController = require("../controllers/activityController");
 
 const authMiddleware = require("../middleware/authMiddleware");
+
 const {
   isDestinationOwner,
   isActivityOwner,
