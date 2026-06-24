@@ -650,7 +650,11 @@ export const TripDetails = () => {
                 </Box>
 
                 <Card.Body p={6} bg={{ _dark: "gray.900" }}>
-                  <SimpleGrid columns={{ base: 1, md: 2 }} gap={12}>
+                  <SimpleGrid
+                    columns={{ base: 1, md: 2 }}
+                    gap={12}
+                    alignItems="stretch"
+                  >
                     <ActivitySection
                       destination={dest}
                       onUpdate={refreshStats}

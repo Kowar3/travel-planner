@@ -16,7 +16,24 @@ import {
 import { Receipt, Plus, Tag, Trash2, Wallet } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/api/axios";
+import { formatDate } from "@/utils/helpers";
 import type { Destination, Expense } from "@/types/types";
+
+const expenseInputStyles = {
+  size: "sm" as const,
+  h: "32px",
+  bg: { base: "white", _dark: "gray.900" },
+  borderRadius: "xl",
+  border: "1px solid",
+  borderColor: { base: "gray.100", _dark: "whiteAlpha.200" },
+  outline: "none",
+  _focus: {
+    borderColor: "orange.400",
+    ring: "none",
+    outline: "none",
+    boxShadow: "none",
+  },
+};
 
 export const ExpenseSection = ({
   destination,
@@ -27,6 +44,7 @@ export const ExpenseSection = ({
 }) => {
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [filterCategory, setFilterCategory] = useState("all");
 
   const minDate = destination?.startDate
     ? destination.startDate.split("T")[0]
@@ -108,21 +126,46 @@ export const ExpenseSection = ({
   };
 
   return (
-    <Box height="480px" display="flex" flexDirection="column">
-      <HStack mb={3} color="orange.500">
-        <Receipt size={16} />
-        <Heading
-          size="xs"
-          textTransform="uppercase"
-          letterSpacing="widest"
-          color={{ _dark: "orange.300" }}
-        >
-          Expenses
-        </Heading>
+    <Box h="494px" display="flex" flexDirection="column">
+      <HStack mb={3} minH="36px" flexShrink={0} justify="space-between" align="center">
+        <HStack color="orange.500">
+          <Receipt size={16} />
+          <Heading
+            size="xs"
+            textTransform="uppercase"
+            letterSpacing="widest"
+            color={{ _dark: "orange.300" }}
+          >
+            Expenses
+          </Heading>
+        </HStack>
+        <NativeSelect.Root size="xs" w="auto" minW="110px">
+          <NativeSelect.Field
+            bg={{ base: "orange.50", _dark: "whiteAlpha.100" }}
+            borderRadius="lg"
+            border="1px solid"
+            borderColor={{ base: "orange.200", _dark: "whiteAlpha.200" }}
+            fontSize="xs"
+            h="28px"
+            py={0}
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+          >
+            <option value="all">All</option>
+            <option value="food">🍔 Food</option>
+            <option value="transport">🚗 Transport</option>
+            <option value="accommodation">🏨 Accommodation</option>
+            <option value="recreation">🏊 Entertainment</option>
+            <option value="shopping">🛍️ Shopping</option>
+            <option value="tickets">🎟️ Tickets</option>
+            <option value="other">📦 Other</option>
+          </NativeSelect.Field>
+        </NativeSelect.Root>
       </HStack>
 
       <Box
         flex="1"
+        minH={0}
         overflowY="auto"
         pr={2}
         mb={3}
@@ -135,16 +178,16 @@ export const ExpenseSection = ({
           },
         }}
       >
-        <VStack gap={3} align="stretch">
-          {expenses.length > 0 ? (
-            expenses.map((exp) => (
+        <VStack gap={3} align="stretch" minH="full">
+          {expenses.filter((e) => filterCategory === "all" || e.category === filterCategory).length > 0 ? (
+            expenses.filter((e) => filterCategory === "all" || e.category === filterCategory).map((exp) => (
               <Box
                 key={exp._id}
                 p={3}
-                bg={{ base: "white", _dark: "whiteAlpha.100" }}
+                bg={{ base: "orange.50/50", _dark: "whiteAlpha.100" }}
                 borderRadius="2xl"
                 borderWidth="1px"
-                borderColor={{ base: "gray.100", _dark: "whiteAlpha.100" }}
+                borderColor={{ base: "orange.100", _dark: "whiteAlpha.100" }}
                 transition="all 0.2s"
               >
                 <HStack justify="space-between">
@@ -161,9 +204,9 @@ export const ExpenseSection = ({
                         {exp.title}
                       </Text>
                       <Text fontSize="10px" color="gray.500">
-                        {new Date(exp.startDate).toLocaleDateString()}
+                        {formatDate(exp.startDate)}
                         {exp.startDate !== exp.endDate &&
-                          ` - ${new Date(exp.endDate).toLocaleDateString()}`}
+                          ` - ${formatDate(exp.endDate)}`}
                       </Text>
                     </VStack>
                   </HStack>
@@ -185,8 +228,7 @@ export const ExpenseSection = ({
             ))
           ) : (
             <Center
-              flex="1"
-              h="180px"
+              minH="full"
               bg={{ base: "orange.50/30", _dark: "whiteAlpha.50" }}
               borderRadius="3xl"
               border="2px dashed"
@@ -227,28 +269,25 @@ export const ExpenseSection = ({
         bg={{ base: "orange.50/50", _dark: "whiteAlpha.100" }}
         border="1px solid"
         borderColor={{ base: "orange.100", _dark: "whiteAlpha.200" }}
+        flexShrink={0}
+        mt="auto"
+        h="186px"
       >
-        <VStack gap={2.5}>
+        <VStack gap={2.5} w="full">
           <Input
-            size="sm"
-            bg={{ base: "white", _dark: "gray.900" }}
-            borderRadius="xl"
+            {...expenseInputStyles}
             placeholder="Expense description (e.g. Dinner)..."
             value={formData.title}
-            border="none"
-            _focus={{ ring: "2px", ringColor: "orange.400" }}
             onChange={(e) =>
               setFormData({ ...formData, title: e.target.value })
             }
           />
 
-          <HStack width="full" gap={2}>
-            <Box flex="1.5">
-              <NativeSelect.Root size="sm">
+          <HStack width="full" gap={2} h="32px">
+            <Box flex="1.5" h="32px">
+              <NativeSelect.Root size="sm" h="32px">
                 <NativeSelect.Field
-                  bg={{ base: "white", _dark: "gray.900" }}
-                  borderRadius="xl"
-                  border="none"
+                  {...expenseInputStyles}
                   value={formData.category}
                   onChange={(e) =>
                     setFormData({ ...formData, category: e.target.value })
@@ -265,14 +304,10 @@ export const ExpenseSection = ({
               </NativeSelect.Root>
             </Box>
             <Input
+              {...expenseInputStyles}
               flex="1"
-              size="sm"
               type="number"
-              bg={{ base: "white", _dark: "gray.900" }}
-              borderRadius="xl"
               placeholder="€"
-              border="none"
-              _focus={{ ring: "2px", ringColor: "orange.400" }}
               value={formData.amount}
               onChange={(e) =>
                 setFormData({ ...formData, amount: e.target.value })
@@ -280,13 +315,11 @@ export const ExpenseSection = ({
             />
           </HStack>
 
-          <HStack width="full" gap={2}>
+          <HStack width="full" gap={2} h="32px">
             <Input
-              size="sm"
+              {...expenseInputStyles}
+              flex="1"
               type="date"
-              bg={{ base: "white", _dark: "gray.900" }}
-              borderRadius="xl"
-              border="none"
               min={minDate}
               max={maxDate}
               value={formData.startDate}
@@ -302,11 +335,9 @@ export const ExpenseSection = ({
               }
             />
             <Input
-              size="sm"
+              {...expenseInputStyles}
+              flex="1"
               type="date"
-              bg={{ base: "white", _dark: "gray.900" }}
-              borderRadius="xl"
-              border="none"
               min={formData.startDate}
               max={maxDate}
               value={formData.endDate}
@@ -318,6 +349,7 @@ export const ExpenseSection = ({
 
           <Button
             width="full"
+            h="32px"
             size="sm"
             borderRadius="xl"
             colorPalette="orange"

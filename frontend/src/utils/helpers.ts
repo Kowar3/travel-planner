@@ -30,7 +30,8 @@ export const validatePassword = (password: string): string => {
 
 export const formatDate = (dateString: string): string => {
   if (!dateString) return "";
-  return new Date(dateString).toLocaleDateString("sr-RS");
+  const [year, month, day] = dateString.split("T")[0].split("-");
+  return `${day}.${month}.${year}`;
 };
 
 export const cleanObject = <T extends Record<string, unknown>>(

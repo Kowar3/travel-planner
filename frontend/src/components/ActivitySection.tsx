@@ -23,7 +23,24 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 import api from "@/api/axios";
+import { formatDate } from "@/utils/helpers";
 import type { Activity, Destination } from "@/types/types";
+
+const activityInputStyles = {
+  size: "sm" as const,
+  h: "32px",
+  bg: { base: "white", _dark: "gray.900" },
+  borderRadius: "xl",
+  border: "1px solid",
+  borderColor: { base: "gray.100", _dark: "whiteAlpha.200" },
+  outline: "none",
+  _focus: {
+    borderColor: "teal.400",
+    ring: "none",
+    outline: "none",
+    boxShadow: "none",
+  },
+};
 
 export const ActivitySection = ({
   destination,
@@ -65,11 +82,17 @@ export const ActivitySection = ({
 
   const handleAdd = async () => {
     if (!formData.title.trim()) {
-      toast.warn("Activity title is required!");
+      toast.error("Activity title is required!");
       return;
     }
+
     if (!formData.date) {
-      toast.warn("Please select a date!");
+      toast.error("Please select a date!");
+      return;
+    }
+
+    if (!formData.location.trim()) {
+      toast.error("Please enter where!");
       return;
     }
 
@@ -103,21 +126,32 @@ export const ActivitySection = ({
   };
 
   return (
-    <Box height="480px" display="flex" flexDirection="column">
-      <HStack mb={3} color="teal.500">
-        <ClipboardList size={16} />
-        <Heading
-          size="xs"
-          textTransform="uppercase"
-          letterSpacing="widest"
-          color={{ _dark: "teal.300" }}
-        >
-          Daily Activities
-        </Heading>
+    <Box h="494px" display="flex" flexDirection="column">
+      <HStack
+        mb={3}
+        minH="36px"
+        flexShrink={0}
+        justify="space-between"
+        align="center"
+        color="teal.500"
+      >
+        <HStack>
+          <ClipboardList size={16} />
+          <Heading
+            size="xs"
+            textTransform="uppercase"
+            letterSpacing="widest"
+            color={{ _dark: "teal.300" }}
+          >
+            Daily Activities
+          </Heading>
+        </HStack>
+        <Box minW="110px" />
       </HStack>
 
       <Box
         flex="1"
+        minH={0}
         overflowY="auto"
         pr={2}
         mb={3}
@@ -130,16 +164,16 @@ export const ActivitySection = ({
           },
         }}
       >
-        <VStack gap={3} align="stretch">
+        <VStack gap={3} align="stretch" minH="full">
           {activities.length > 0 ? (
             activities.map((act) => (
               <Box
                 key={act._id}
                 p={3}
-                bg={{ base: "white", _dark: "whiteAlpha.100" }}
+                bg={{ base: "teal.50/50", _dark: "whiteAlpha.100" }}
                 borderRadius="2xl"
                 borderWidth="1px"
-                borderColor={{ base: "gray.100", _dark: "whiteAlpha.100" }}
+                borderColor={{ base: "teal.100", _dark: "whiteAlpha.100" }}
                 transition="all 0.2s"
               >
                 <HStack justify="space-between" align="start">
@@ -167,9 +201,7 @@ export const ActivitySection = ({
                       >
                         <HStack gap={1}>
                           <Calendar size={10} />
-                          <Text fontSize="10px">
-                            {new Date(act.date).toLocaleDateString("en-US")}
-                          </Text>
+                          <Text fontSize="10px">{formatDate(act.date)}</Text>
                         </HStack>
                       </Badge>
                       {act.location && (
@@ -201,8 +233,7 @@ export const ActivitySection = ({
             ))
           ) : (
             <Center
-              flex="1"
-              h="180px"
+              minH="full"
               bg={{ base: "teal.50/30", _dark: "whiteAlpha.50" }}
               borderRadius="3xl"
               border="2px dashed"
@@ -243,61 +274,46 @@ export const ActivitySection = ({
         bg={{ base: "teal.50/50", _dark: "whiteAlpha.100" }}
         border="1px solid"
         borderColor={{ base: "teal.100", _dark: "whiteAlpha.200" }}
+        flexShrink={0}
+        mt="auto"
+        h="186px"
       >
-        <VStack gap={2}>
-          <Box w="full">
-            <Input
-              size="sm"
-              bg={{ base: "white", _dark: "gray.900" }}
-              borderRadius="xl"
-              placeholder="Activity name..."
-              value={formData.title}
-              border="none"
-              _focus={{ ring: "2px", ringColor: "teal.400" }}
-              onChange={(e) =>
-                setFormData({ ...formData, title: e.target.value })
-              }
-            />
-          </Box>
+        <VStack gap={2.5} w="full">
+          <Input
+            {...activityInputStyles}
+            placeholder="Activity name..."
+            value={formData.title}
+            onChange={(e) =>
+              setFormData({ ...formData, title: e.target.value })
+            }
+          />
 
-          <Box w="full">
-            <Input
-              size="sm"
-              bg={{ base: "white", _dark: "gray.900" }}
-              borderRadius="xl"
-              placeholder="Description (optional)..."
-              value={formData.description}
-              border="none"
-              _focus={{ ring: "2px", ringColor: "teal.400" }}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-            />
-          </Box>
+          <Input
+            {...activityInputStyles}
+            placeholder="Description (optional)..."
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+          />
 
-          <HStack w="full" gap={2}>
+          <HStack w="full" gap={2} h="32px">
             <Input
-              size="sm"
+              {...activityInputStyles}
+              flex="1"
               type="date"
-              bg={{ base: "white", _dark: "gray.900" }}
-              borderRadius="xl"
               min={minDate}
               max={maxDate}
               value={formData.date}
-              border="none"
-              flex="1"
               onChange={(e) =>
                 setFormData({ ...formData, date: e.target.value })
               }
             />
             <Input
-              size="sm"
-              bg={{ base: "white", _dark: "gray.900" }}
-              borderRadius="xl"
+              {...activityInputStyles}
+              flex="1"
               placeholder="Where?"
               value={formData.location}
-              border="none"
-              flex="1"
               onChange={(e) =>
                 setFormData({ ...formData, location: e.target.value })
               }
@@ -306,6 +322,7 @@ export const ActivitySection = ({
 
           <Button
             w="full"
+            h="32px"
             size="sm"
             borderRadius="xl"
             colorPalette="teal"
