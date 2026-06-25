@@ -287,7 +287,7 @@ travel-planner/
     │   └── pom.xml
     │
     └── postman/
-        ├── travel_planner.json           # kolekcija, 25 zahteva
+        ├── travel_planner.json           # kolekcija, 26 zahteva
         ├── env.json                      # okruženje za lokalni razvoj
         └── env.example.json              # šablon bez tajnih vrednosti
 ```
