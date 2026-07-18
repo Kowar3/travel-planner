@@ -6,7 +6,7 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Chakra UI](https://img.shields.io/badge/Chakra_UI-v3-319795?logo=chakraui&logoColor=white)](https://chakra-ui.com/)
 
-> Veb aplikacija stvorena za planiranje putovanja. Putovanje može biti samo od tačke A do tačke B ili kroz više gradova — sa interaktivnom mapom, praćenjem troškova i ativnosti po destinaciji i statistikom po putovanju.
+> Veb aplikacija stvorena za planiranje putovanja. Putovanje može biti samo od tačke A do tačke B ili kroz više gradova — sa interaktivnom mapom, praćenjem troškova i aktivnosti po destinaciji i statistikom po putovanju.
 
 ---
 
@@ -61,7 +61,7 @@ Korisnik
            └── Trošak
 ```
 
-Svaki resurs je vlasništvo korisnika koji ga je kreirao. Middleware `checkOwner.js` verifikuje ceo lanac pre svake izmene — od tokena do konkretnog resursa, kako ne bi mogao neko drugi, ako mu je id naseg putovanja poznat, da ga vidi, izmeni ili obriše.
+Svaki resurs je vlasništvo korisnika koji ga je kreirao. Middleware `checkOwner.js` verifikuje ceo lanac pre svake izmene — od tokena do konkretnog resursa, kako ne bi mogao neko drugi, ako mu je id našeg putovanja poznat, da ga vidi, izmeni ili obriše.
 
 ---
 
